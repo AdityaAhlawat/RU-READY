@@ -60,7 +60,7 @@ export function LandingPage() {
           <h2 className="text-2xl font-bold mb-4">What is RU Ready?</h2>
           <p className="text-lg mb-6">
             RU Ready is a platform that helps Rutgers students connect with each other for various activities and
-            events. Whether you're looking to play sports, study in a group, or attend a hackathon, RU Ready makes it
+            events. Whether you are looking to play sports, study in a group, or attend a hackathon, RU Ready makes it
             easy to find and join like-minded individuals.
           </p>
           <h2 className="text-2xl font-bold mb-4">Key Features</h2>

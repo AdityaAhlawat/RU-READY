@@ -49,7 +49,7 @@ export function SignIn() {
         </form>
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            Don't have an account?{" "}
+            Do not have an account?{" "}
             <Link
               className="font-medium text-red-600 hover:text-red-500"
               href="/signup"
