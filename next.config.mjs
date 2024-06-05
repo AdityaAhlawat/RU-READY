@@ -1,7 +1,8 @@
-import { defineConfig } from 'next';
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    env: {
+        MONGODB_URI: process.env.MONGODB_URI,
+      },
+};
 
-export default defineConfig({
-  env: {
-    MONGODB_URI: process.env.MONGODB_URI,
-  },
-});
+export default nextConfig;
