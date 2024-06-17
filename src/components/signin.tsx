@@ -47,17 +47,6 @@ export function SignIn() {
             </div>
           </div>
         </form>
-        <div className="text-center mt-4">
-          <p className="text-sm text-gray-600">
-            Do not have an account?{" "}
-            <Link
-              className="font-medium text-red-600 hover:text-red-500"
-              href="/signup"
-            >
-              Sign up
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   )

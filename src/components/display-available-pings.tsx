@@ -21,26 +21,29 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import {signOut} from "../lib/auth"
 
 export function DisplayAvailablePings() {
   return (
     <div key="1" className="flex flex-col w-full min-h-screen">
-      <header className="flex items-center h-16 px-4 border-b shrink-0 md:px-6 bg-red-500 text-white">
-        <Link className="flex items-center gap-2 text-lg font-semibold sm:text-base mr-4" href="#">
+     <header className="flex items-center justify-between h-16 px-4 bg-red-500 text-white">
+        <Link className="flex items-center gap-2 text-lg font-semibold" href="#">
           <FrameIcon className="w-6 h-6" />
           <span className="sr-only">Rutgers Student App</span>
         </Link>
-        <nav className="hidden font-medium sm:flex flex-row items-center gap-5 text-sm lg:gap-6">
-          <Link className="font-bold" href="#">
-            Dashboard
-          </Link>
-        </nav>
-        <div className="flex items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-          <Link className="text-white/80 hover:text-white" href="#">
-            <UserIcon className="w-6 h-6" />
-            <span className="sr-only">Profile</span>
-          </Link>
-        </div>
+        <form
+          action={async () => {
+            "use server";
+            await signOut();
+          }}
+        >
+          <button
+            type="submit"
+            className="px-4 py-2 bg-white text-red-500 rounded-md hover:bg-red-100 focus:outline-none md:ml-auto"
+          >
+            Sign Out
+          </button>
+        </form>
       </header>
       <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10 ">
         <div className="max-w-6xl w-full mx-auto flex items-center justify-center gap-4">

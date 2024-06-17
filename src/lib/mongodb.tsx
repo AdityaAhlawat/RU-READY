@@ -15,4 +15,3 @@ const connetMongoDB = () => {
 }
 
 export default connetMongoDB;
- 
