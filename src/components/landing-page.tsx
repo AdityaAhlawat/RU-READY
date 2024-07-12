@@ -39,9 +39,9 @@ export function LandingPage() {
             <PinIcon className="h-24 w-24 mb-4" />
             <h1 className="text-3xl font-bold mb-2">Welcome to RU Ready</h1>
             <p className="text-lg mb-6">Connecting Rutgers students for sports, study, and more using a revolutionary ping system</p>
-            <div className="mb-6">
+            {/* <div className="mb-6"> */}
               {/* Video placeholder */}
-              <div className="aspect-w-16 aspect-h-10 bg-gray-200 rounded-lg shadow-md">
+              {/* <div className="aspect-w-16 aspect-h-10 bg-gray-200 rounded-lg shadow-md">
                 <iframe
                   className="w-full h-full rounded-lg"
                   src="https://www.youtube.com/embed/dQw4w9WgXcQ"
@@ -49,8 +49,8 @@ export function LandingPage() {
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 ></iframe>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
             <Button className="bg-white text-red-500 hover:bg-red-100 px-6 py-3 rounded-full font-medium" size="lg">
               <Link href="/signin">Get Started</Link>
             </Button>
