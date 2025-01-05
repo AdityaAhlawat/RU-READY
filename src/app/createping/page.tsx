@@ -14,7 +14,7 @@ export default async function createping() {
   return (
     <SessionProvider session={session}>
       <header className="flex items-center justify-between h-16 px-4 bg-red-500 text-white">
-        <Link className="flex items-center gap-2 text-lg font-semibold" href="#">
+        <Link className="flex items-center gap-2 text-lg font-semibold" href="/intro">
           <FrameIcon className="w-6 h-6" />
           <span className="sr-only">Rutgers Student App</span>
         </Link>

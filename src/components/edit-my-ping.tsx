@@ -1,34 +1,41 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CardContent, Card } from "@/components/ui/card";
 import { useSession } from 'next-auth/react';
-import { LatLngExpression } from 'leaflet'; // Import LatLngExpression
 
-const campusCoordinates: { [key: string]: LatLngExpression } = {
-  "Busch Campus": [40.5236, -74.4581],
-  "College Avenue Campus": [40.5004, -74.4474],
-  "Livingston Campus": [40.5226, -74.4371],
-  "Cook/Douglass Campus": [40.4815, -74.4328],
+const campusCoordinates: { [key: string]: { lat: number; lng: number } } = {
+  "Busch Campus": { lat: 40.5236, lng: -74.4581 },
+  "College Avenue Campus": { lat: 40.5004, lng: -74.4474 },
+  "Livingston Campus": { lat: 40.5226, lng: -74.4371 },
+  "Cook/Douglass Campus": { lat: 40.4815, lng: -74.4328 },
 };
+
 
 const defaultZoom = 15;
 
 function LocationPicker({ onLocationSelect }: { onLocationSelect: (latlng: { lat: number, lng: number }) => void }) {
-  useMapEvents({
-    click(e) {
-      onLocationSelect(e.latlng);
-    },
-  });
-
-  return null; // No visual component needed here, just the event handler
+  return (
+    <GoogleMap
+      onClick={(e) => {
+        if (e.latLng) {
+          onLocationSelect({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+        }
+      }}
+      center={{ lat: 40.5236, lng: -74.4581 }} // Default to Busch Campus
+      zoom={15}
+      mapContainerStyle={{ width: '100%', height: '100%' }}
+    >
+      {/* Optionally, add a marker for the selected location */}
+    </GoogleMap>
+  );
 }
+
 
 function formatTime(timeString: string) {
   const [hours, minutes] = timeString.split(':');
@@ -55,9 +62,13 @@ export default function EditMyPing() {
   const [showModal, setShowModal] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showTimeDateInputs, setShowTimeDateInputs] = useState(true);
-  const [mapCenter, setMapCenter] = useState<LatLngExpression>(campusCoordinates["Busch Campus"]);
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>(campusCoordinates["Busch Campus"]);
   const [error, setError] = useState('');
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+  });
+  
   useEffect(() => {
     async function fetchPing() {
       try {
@@ -129,10 +140,12 @@ export default function EditMyPing() {
   const handleLocationSelect = (latlng: { lat: number, lng: number }) => {
     setFormData({
       ...formData,
-      specificLocation: `Latitude: ${latlng.lat}, Longitude: ${latlng.lng}`
+      specificLocation: `Latitude: ${latlng.lat}, Longitude: ${latlng.lng}`,
     });
+    setMapCenter({ lat: latlng.lat, lng: latlng.lng });
     setShowMap(false);
   };
+  
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -178,6 +191,11 @@ export default function EditMyPing() {
     router.push("/intro");
   };
 
+  if (!isLoaded) {
+    return <div>Loading Google Maps...</div>;
+  }
+
+  
   return (
     <>
       {showModal && (
@@ -194,13 +212,15 @@ export default function EditMyPing() {
 
       {showMap && (
         <div className="absolute top-0 left-0 w-full h-full z-10">
-          <MapContainer center={mapCenter} zoom={defaultZoom} style={{ height: '100%', width: '100%' }}>
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            <LocationPicker onLocationSelect={handleLocationSelect} />
-          </MapContainer>
+          <GoogleMap
+            center={mapCenter}
+            zoom={15}
+            mapContainerStyle={{ height: '100%', width: '100%' }}
+            onClick={(e) => handleLocationSelect({ lat: e.latLng.lat(), lng: e.latLng.lng() })}
+            mapTypeId="satellite" 
+          >
+            <Marker position={mapCenter} />
+          </GoogleMap>
           <Button onClick={() => setShowMap(false)} className="absolute top-2 right-2 bg-red-500 text-white p-2">
             Close Map
           </Button>

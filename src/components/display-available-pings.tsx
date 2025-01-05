@@ -1,21 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L, { LatLngExpression } from 'leaflet';
+import { GoogleMap, useLoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"; // Ensure this import is correct
 
-// Define the custom marker icon
-const customMarkerIcon = new L.Icon({
-  iconUrl: 'data:image/svg+xml;base64,' + btoa(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="red" viewBox="0 0 24 24">
-      <path d="M12 2C8.14 2 5 5.14 5 9c0 1.1.22 2.16.61 3.13.92 2.16 2.63 4.26 5.34 6.7.39.35.9.35 1.29 0 2.71-2.44 4.42-4.54 5.34-6.7C18.78 11.16 19 10.1 19 9c0-3.86-3.14-7-7-7zm0 9.5C10.62 11.5 10 10.88 10 10s.62-1.5 1.5-1.5S13 9.12 13 10s-.62 1.5-1.5 1.5z"/>
-    </svg>`),
-  iconSize: [24, 24],
-  iconAnchor: [12, 24],
-  popupAnchor: [0, -24]
-});
 
 function formatDuration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -33,6 +21,10 @@ export default function DisplayAvailablePings() {
   const [showAll, setShowAll] = useState(false);
   const [user, setUser] = useState(null); // Replace with actual user retrieval logic
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!, // Make sure your API key is in .env
+  });
+  
   useEffect(() => {
     fetchUser();
     fetchPings();
@@ -100,12 +92,17 @@ export default function DisplayAvailablePings() {
     return regex.test(location);
   };
 
-  const getLatLon = (location: string): LatLngExpression | null => {
+  const getLatLon = (location: string): { lat: number; lng: number } | null => {
     const regex = /Latitude:\s*([-+]?\d*\.?\d+),\s*Longitude:\s*([-+]?\d*\.?\d+)/;
     const match = location.match(regex);
-    return match ? [parseFloat(match[1]), parseFloat(match[2])] : null;
+    return match ? { lat: parseFloat(match[1]), lng: parseFloat(match[2]) } : null;
   };
+  
 
+  if (!isLoaded) {
+    return <div>Loading Google Maps...</div>;
+  }
+  
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 p-4">
       <main className="flex-grow">
@@ -176,19 +173,15 @@ export default function DisplayAvailablePings() {
                 </div>
                 {isValidLatLon(ping.specificLocation) && (
                   <div className="mt-4">
-                    <MapContainer
-                      center={getLatLon(ping.specificLocation) as LatLngExpression}
+                    <GoogleMap
+                      center={getLatLon(ping.specificLocation)!}
                       zoom={18}
-                      scrollWheelZoom={false}
-                      style={{ height: '150px', width: '100%' }}
+                      mapContainerStyle={{ height: "150px", width: "100%" }}
+                      mapTypeId="satellite" 
                     >
-                      <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
-                      <Marker position={getLatLon(ping.specificLocation) as LatLngExpression} icon={customMarkerIcon}>
-                        <Popup>{ping.specificLocation}</Popup>
+                      <Marker position={getLatLon(ping.specificLocation)!}>
                       </Marker>
-                    </MapContainer>
+                    </GoogleMap>
                   </div>
                 )}
               </div>
